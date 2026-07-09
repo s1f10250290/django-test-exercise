@@ -134,5 +134,4 @@ class TodoViewTestCase(TestCase):
         client = Client()
         response = client.get('/1/delete')
 
-        
         self.assertEqual(response.status_code, 404)
