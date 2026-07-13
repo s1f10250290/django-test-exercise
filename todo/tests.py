@@ -120,6 +120,38 @@ class TodoViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    def test_update_get_success(self):
+        task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
+        task.save()
+        client = Client()
+        response = client.get('/{}/update'.format(task.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/edit.html')
+        self.assertEqual(response.context['task'], task)
+
+    def test_update_post_success(self):
+        task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
+        task.save()
+        client = Client()
+        response = client.post('/{}/update'.format(task.pk), {
+            'title': 'updated task',
+            'due_at': '2026-06-30 12:00:00'
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/{}/'.format(task.pk))
+
+        task.refresh_from_db()
+        self.assertEqual(task.title, 'updated task')
+        self.assertEqual(task.due_at, timezone.make_aware(datetime(2026, 6, 30, 12, 0, 0)))
+
+    def test_update_get_not_found(self):
+        client = Client()
+        response = client.get('/1/update')
+
+        self.assertEqual(response.status_code, 404)
+
     def test_delete_get_success(self):
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
         task.save()
