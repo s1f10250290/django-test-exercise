@@ -1,6 +1,6 @@
 import os
 import dj_database_url
-from .settings import *  # noqa: F403
+from .settings import *  # noqa: F403, F405
 
 DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
