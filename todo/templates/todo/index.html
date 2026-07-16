@@ -23,6 +23,16 @@
           <label for="dueInput">Due at:</label>
           <input id="dueInput" name="due_at" type="datetime-local">
         </div>
+        <div class="form-group">
+          <label for="tagInput">Tags</label>
+          <div id="tagInputs" class="tag-inputs">
+            <div class="tag-input-row">
+              <input id="tagInput" name="tags" type="text" placeholder="例: 仕事">
+              <button class="remove-tag" type="button" aria-label="タグ入力欄を削除">削除</button>
+            </div>
+          </div>
+          <button id="addTag" class="add-tag" type="button">タグを追加</button>
+        </div>
         <div class="form-actions">
           <button type="submit">Submit</button>
         </div>
@@ -37,6 +47,13 @@
         {% for task in tasks %}
         <div class="task-card">
           <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
+          {% if task.tags.all %}
+          <div class="tag-list">
+            {% for tag in task.tags.all %}
+            <span class="tag-badge">{{ tag.name }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
           <ul>
             <li>Posted at: {{ task.posted_at }}</li>
             {% if task.due_at %}
@@ -52,6 +69,23 @@
         {% endfor %}
       </div>
     </div>
+    <script>
+      const tagInputs = document.getElementById('tagInputs');
+
+      document.getElementById('addTag').addEventListener('click', () => {
+        const row = document.createElement('div');
+        row.className = 'tag-input-row';
+        row.innerHTML = '<input name="tags" type="text" placeholder="例: 買い物"><button class="remove-tag" type="button" aria-label="タグ入力欄を削除">削除</button>';
+        tagInputs.appendChild(row);
+        row.querySelector('input').focus();
+      });
+
+      tagInputs.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-tag')) {
+          event.target.parentElement.remove();
+        }
+      });
+    </script>
   </body>
 
 </html>
