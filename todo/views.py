@@ -14,9 +14,9 @@ def index(request):
         task.save()
 
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+        tasks = Task.objects.filter(is_deleted=False).order_by('due_at')
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = Task.objects.filter(is_deleted=False).order_by('-posted_at')
 
     context = {
         'tasks': tasks
@@ -59,5 +59,14 @@ def delete(request, task_id):
         task = Task.objects.get(pk=task_id)
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
-    task.delete()
+    task.is_deleted = True
+    task.save()
     return redirect(index)
+
+
+def deleted_list(request):
+    tasks = Task.objects.filter(is_deleted=True).order_by('-posted_at')
+    context = {
+        'tasks': tasks
+    }
+    return render(request, 'todo/deleted_list.html', context)
