@@ -50,6 +50,27 @@ input {
   margin-top: 8px;
 }
 
+.tag-inputs {
+  display: grid;
+  gap: 8px;
+}
+
+.tag-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.remove-tag,
+.add-tag {
+  flex-shrink: 0;
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.add-tag {
+  margin-top: 8px;
+}
+
 button {
   border: none;
   border-radius: 8px;
@@ -88,6 +109,21 @@ button {
 .task-card h2 {
   margin: 0 0 8px 0;
   font-size: 18px;
+}
+
+.tag-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 10px;
+}
+
+.tag-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 13px;
 }
 
 .task-card ul {

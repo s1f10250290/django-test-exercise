@@ -12,6 +12,13 @@
 <body>
   <div class="page">
     <h1>{{ task.title }}</h1>
+    {% if task.tags.all %}
+    <div class="tag-list">
+      {% for tag in task.tags.all %}
+      <span class="tag-badge">{{ tag.name }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
     <ul class="meta-list">
       <li>Posted at: {{ task.posted_at }}</li>
       {% if task.due_at %}

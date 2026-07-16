@@ -4,11 +4,19 @@ from django.utils import timezone
 # Create your models here.
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Task(models.Model):
     title = models.CharField(max_length=100)
     completed = models.BooleanField(default=False)
     posted_at = models.DateTimeField(default=timezone.now)
     due_at = models.DateTimeField(null=True, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
     is_deleted = models.BooleanField(default=False)
 
     def is_overdue(self, dt):

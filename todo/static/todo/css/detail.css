@@ -21,6 +21,21 @@ h1 {
   color: #1f2937;
 }
 
+.tag-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 16px;
+}
+
+.tag-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 13px;
+}
+
 .meta-list {
   padding-left: 20px;
   line-height: 1.8;

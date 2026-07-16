@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.utils import timezone
 from datetime import datetime
-from todo.models import Task
+from todo.models import Tag, Task
 
 # Create your tests here.
 
@@ -55,6 +55,14 @@ class TaskModelTestCase(TestCase):
 
         self.assertFalse(task.is_overdue(current))
 
+    def test_task_can_have_tags(self):
+        task = Task.objects.create(title='task with tags')
+        work = Tag.objects.create(name='仕事')
+        shopping = Tag.objects.create(name='買い物')
+        task.tags.add(work, shopping)
+
+        self.assertEqual(list(task.tags.all()), [work, shopping])
+
 
 class TodoViewTestCase(TestCase):
     def test_index_get(self):
@@ -73,6 +81,20 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.templates[0].name, 'todo/index.html')
         self.assertEqual(len(response.context['tasks']), 1)
+
+    def test_index_post_with_tags(self):
+        client = Client()
+        response = client.post('/', {
+            'title': 'Test Task',
+            'due_at': '2026-06-30 23:59:59',
+            'tags': ['仕事', '買い物', '仕事', ''],
+        })
+
+        task = Task.objects.get(title='Test Task')
+        self.assertEqual(set(task.tags.values_list('name', flat=True)), {'仕事', '買い物'})
+        self.assertContains(response, 'tag-badge')
+        self.assertContains(response, '仕事')
+        self.assertContains(response, '買い物')
 
     def test_index_get_order_post(self):
         task1 = Task(title='task1', due_at=timezone.make_aware(
@@ -114,6 +136,16 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.templates[0].name, 'todo/detail.html')
         self.assertEqual(response.context['task'], task)
+
+    def test_detail_displays_tags(self):
+        task = Task.objects.create(title='task1')
+        task.tags.add(Tag.objects.create(name='仕事'))
+        client = Client()
+
+        response = client.get('/{}/'.format(task.pk))
+
+        self.assertContains(response, 'tag-badge')
+        self.assertContains(response, '仕事')
 
     def test_detail_get(self):
         client = Client()
