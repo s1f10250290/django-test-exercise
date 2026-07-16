@@ -21,7 +21,7 @@ def index(request):
 
     if request.GET.get('order') == 'due':
         tasks = Task.objects.prefetch_related('tags').order_by('due_at')
-    else:
+    elif:
         tasks = Task.objects.prefetch_related('tags').order_by('-posted_at')
         tasks = Task.objects.filter(is_deleted=False).order_by('due_at')
     else:
