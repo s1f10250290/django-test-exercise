@@ -1,7 +1,6 @@
 import os
 import dj_database_url
-from .settings import *  # noqa: F403, F405
-
+from .settings import *  # noqa: F403, F401
 DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
 ALLOWED_HOSTS.append(os.environ['RENDER_EXTERNAL_HOSTNAME'])
