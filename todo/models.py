@@ -17,6 +17,7 @@ class Task(models.Model):
     posted_at = models.DateTimeField(default=timezone.now)
     due_at = models.DateTimeField(null=True, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    is_deleted = models.BooleanField(default=False)
 
     def is_overdue(self, dt):
         if self.due_at is None:

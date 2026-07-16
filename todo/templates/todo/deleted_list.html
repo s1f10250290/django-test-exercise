@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deleted Tasks</title>
+</head>
+<body>
+    <h1>Deleted Tasks</h1>
+    
+    <div>
+        <a href="{% url 'index' %}">Back to Active Tasks</a>
+    </div>
+    
+    {% if tasks %}
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    <strong>{{ task.title }}</strong>
+                    {% if task.due_at %}
+                        - Due: {{ task.due_at }}
+                    {% endif %}
+                    <a href="{% url 'detail' task.id %}">View</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No deleted tasks</p>
+    {% endif %}
+</body>
+</html>

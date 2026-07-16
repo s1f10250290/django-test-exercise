@@ -197,10 +197,46 @@ class TodoViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/')
-        self.assertEqual(Task.objects.filter(pk=task.pk).count(), 0)
+        task.refresh_from_db()
+        self.assertTrue(task.is_deleted)
 
     def test_delete_get_not_found(self):
         client = Client()
         response = client.get('/1/delete')
 
         self.assertEqual(response.status_code, 404)
+
+    def test_deleted_task_not_shown_in_index(self):
+        task1 = Task(title='task1', due_at=timezone.make_aware(
+            datetime(2026, 6, 18)))
+        task1.save()
+        task2 = Task(title='task2', due_at=timezone.make_aware(
+            datetime(2026, 7, 1)))
+        task2.save()
+        task1.is_deleted = True
+        task1.save()
+
+        client = Client()
+        response = client.get('/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['tasks']), 1)
+        self.assertEqual(response.context['tasks'][0], task2)
+
+    def test_deleted_list_view(self):
+        task1 = Task(title='task1', due_at=timezone.make_aware(
+            datetime(2026, 6, 18)))
+        task1.save()
+        task2 = Task(title='task2', due_at=timezone.make_aware(
+            datetime(2026, 7, 1)))
+        task2.save()
+        task1.is_deleted = True
+        task1.save()
+
+        client = Client()
+        response = client.get('/deleted/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/deleted_list.html')
+        self.assertEqual(len(response.context['tasks']), 1)
+        self.assertEqual(response.context['tasks'][0], task1)
