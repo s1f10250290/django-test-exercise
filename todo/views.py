@@ -19,13 +19,11 @@ def index(request):
             tag, _ = Tag.objects.get_or_create(name=name)
             task.tags.add(tag)
 
+    tasks = Task.objects.filter(is_deleted=False).prefetch_related('tags')
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.prefetch_related('tags').order_by('due_at')
-    elif:
-        tasks = Task.objects.prefetch_related('tags').order_by('-posted_at')
-        tasks = Task.objects.filter(is_deleted=False).order_by('due_at')
+        tasks = tasks.order_by('due_at')       
     else:
-        tasks = Task.objects.filter(is_deleted=False).order_by('-posted_at')
+        tasks = tasks.order_by('-posted_at')
 
     context = {
         'tasks': tasks
