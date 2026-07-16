@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
-from todo.models import Task
+from todo.models import Tag, Task
 
 # Create your views here.
 
@@ -12,11 +12,17 @@ def index(request):
         task = Task(title=request.POST['title'],
                     due_at=make_aware(parse_datetime(request.POST['due_at'])))
         task.save()
+        tag_names = {
+            name.strip() for name in request.POST.getlist('tags') if name.strip()
+        }
+        for name in tag_names:
+            tag, _ = Tag.objects.get_or_create(name=name)
+            task.tags.add(tag)
 
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+        tasks = Task.objects.prefetch_related('tags').order_by('due_at')
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = Task.objects.prefetch_related('tags').order_by('-posted_at')
 
     context = {
         'tasks': tasks
@@ -26,7 +32,7 @@ def index(request):
 
 def detail(request, task_id):
     try:
-        task = Task.objects.get(pk=task_id)
+        task = Task.objects.prefetch_related('tags').get(pk=task_id)
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
 
